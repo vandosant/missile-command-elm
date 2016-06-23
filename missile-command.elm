@@ -61,4 +61,6 @@ update msg ({score, x, y} as model) =
 view : Model -> Html Msg
 view model =
   svg [ viewBox "0 0 100 100", width "300px" ]
-    [ rect [ x "10", y "10", width "100", height "100", fill "#ceecee" ] [] ]
+    [ rect [ x "0", y "0", width "100", height "100", fill "#ceecee" ] []
+    , rect [ x (toString model.x), y (toString model.y), width "1", height "1", fill "#000" ] []
+    ]
