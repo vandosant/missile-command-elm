@@ -2,15 +2,17 @@ import Html exposing (Html)
 import Html.App as App
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
+import Time exposing (Time, millisecond)
 
 
 
 
 main =
-  App.beginnerProgram
-    { model = model
+  App.program
+    { init = init
     , view = view
     , update = update
+    , subscriptions = subscriptions
     }
 
 
@@ -35,24 +37,33 @@ model =
   , y = 0
   }
 
-
+init : (Model, Cmd Msg)
+init =
+  (model, Cmd.none)
 
 
 -- UPDATE
 
 
-type Msg = IncrementScore
-  | ResetScore
+type Msg =
+  Tick Time
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg ({score, x, y} as model) =
   case msg of
-    IncrementScore ->
-      { model | score = score + 1 }
+    Tick newTime ->
+      ({ model | y = y + 1, x = x + 1 }, Cmd.none)
 
-    ResetScore ->
-      { model | score = 0 }
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Time.every (50 * millisecond) Tick
+
+
 
 
 -- VIEW
