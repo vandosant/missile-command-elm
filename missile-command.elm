@@ -24,8 +24,9 @@ main =
 
 type alias Model =
   { score : Int
-  , x : Int
-  , y : Int
+  , x : Float
+  , y : Float
+  , velocity : Float
   }
 
 
@@ -35,6 +36,7 @@ model =
   { score = 0
   , x = 0
   , y = 0
+  , velocity = 0.2
   }
 
 init : (Model, Cmd Msg)
@@ -50,10 +52,10 @@ type Msg =
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg ({score, x, y} as model) =
+update msg ({score, x, y, velocity} as model) =
   case msg of
     Tick newTime ->
-      ({ model | y = y + 1, x = x + 1 }, Cmd.none)
+      ({ model | y = y + velocity, x = x + velocity }, Cmd.none)
 
 
 -- SUBSCRIPTIONS
@@ -61,7 +63,7 @@ update msg ({score, x, y} as model) =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every (50 * millisecond) Tick
+  Time.every millisecond Tick
 
 
 
