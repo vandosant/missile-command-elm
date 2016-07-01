@@ -44,11 +44,28 @@ indexedMissile =
   }
 
 
-model : Model
+indexedMissile2 : IndexedMissile
 
+indexedMissile2 =
+  { x = 0
+  , y = 0
+  , velocity = 0.5
+  }
+
+
+makeIndexedMissile : Float -> IndexedMissile
+makeIndexedMissile velocity =
+  { x = 0
+  , y = 0
+  , velocity = velocity
+  }
+
+
+model : Model
 model =
   { score = 0
-  , missiles = [indexedMissile]
+  , missiles =
+    List.map makeIndexedMissile [0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5]
   }
 
 
