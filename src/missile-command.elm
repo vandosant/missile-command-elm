@@ -22,11 +22,25 @@ main =
 -- MODEL
 
 
-type alias Model =
-  { score : Int
-  , x : Float
+type alias IndexedMissile =
+  { x : Float
   , y : Float
   , velocity : Float
+  }
+
+
+type alias Model =
+  { score : Int
+  , missiles : IndexedMissile
+  }
+
+
+indexedMissile : IndexedMissile
+
+indexedMissile =
+  { x = 0
+  , y = 0
+  , velocity = 0.3
   }
 
 
@@ -34,10 +48,9 @@ model : Model
 
 model =
   { score = 0
-  , x = 0
-  , y = 0
-  , velocity = 0.2
+  , missiles = indexedMissile
   }
+
 
 init : (Model, Cmd Msg)
 init =
@@ -52,10 +65,12 @@ type Msg =
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
-update msg ({score, x, y, velocity} as model) =
+update msg ({score, missiles} as model) =
   case msg of
     Tick newTime ->
-      ({ model | y = y + velocity, x = x + velocity }, Cmd.none)
+      ({ model | missiles = {x = missiles.x + missiles.velocity
+      , y = missiles.y + missiles.velocity
+      , velocity = missiles.velocity } }, Cmd.none)
 
 
 -- SUBSCRIPTIONS
@@ -72,8 +87,8 @@ subscriptions model =
 
 
 view : Model -> Html Msg
-view model =
+view ({missiles, score} as model) =
   svg [ viewBox "0 0 100 100", width "300px" ]
     [ rect [ x "0", y "0", width "100", height "100", fill "#ceecee" ] []
-    , rect [ x (toString model.x), y (toString model.y), width "1", height "1", fill "#000" ] []
+    , rect [ x (toString missiles.x), y (toString missiles.y), width "1", height "1", fill "#000" ] []
     ]
