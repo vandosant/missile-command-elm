@@ -3,7 +3,7 @@ import Html.App as App
 import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Time exposing (Time, millisecond)
-
+import VirtualDom exposing (Node)
 
 
 
@@ -31,7 +31,7 @@ type alias IndexedMissile =
 
 type alias Model =
   { score : Int
-  , missiles : IndexedMissile
+  , missiles : List IndexedMissile
   }
 
 
@@ -48,7 +48,7 @@ model : Model
 
 model =
   { score = 0
-  , missiles = indexedMissile
+  , missiles = [indexedMissile]
   }
 
 
@@ -68,10 +68,15 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg ({score, missiles} as model) =
   case msg of
     Tick newTime ->
-      ({ model | missiles = {x = missiles.x + missiles.velocity
-      , y = missiles.y + missiles.velocity
-      , velocity = missiles.velocity } }, Cmd.none)
+      ({ model |
+        missiles =
+          List.map updateMissile missiles
+       }, Cmd.none)
 
+updateMissile : IndexedMissile -> IndexedMissile
+updateMissile missile = {x = missile.x + missile.velocity
+        , y = missile.y + missile.velocity
+        , velocity = missile.velocity }
 
 -- SUBSCRIPTIONS
 
@@ -87,8 +92,15 @@ subscriptions model =
 
 
 view : Model -> Html Msg
-view ({missiles, score} as model) =
-  svg [ viewBox "0 0 100 100", width "300px" ]
-    [ rect [ x "0", y "0", width "100", height "100", fill "#ceecee" ] []
-    , rect [ x (toString missiles.x), y (toString missiles.y), width "1", height "1", fill "#000" ] []
-    ]
+view model =
+  let
+    canvas =
+       rect [ x "0", y "0", width "100", height "100", fill "#ceecee" ] []
+    missiles =
+      List.map viewIndexedMissile model.missiles
+  in
+    svg [ viewBox "0 0 100 100", width "300px" ] ([canvas] ++ missiles)
+
+viewIndexedMissile : IndexedMissile -> VirtualDom.Node a
+viewIndexedMissile missile =
+  rect [ x (toString missile.x), y (toString missile.y), width "1", height "1", fill "#000" ] []
