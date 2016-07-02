@@ -35,24 +35,6 @@ type alias Model =
   }
 
 
-indexedMissile : IndexedMissile
-
-indexedMissile =
-  { x = 0
-  , y = 0
-  , velocity = 0.3
-  }
-
-
-indexedMissile2 : IndexedMissile
-
-indexedMissile2 =
-  { x = 0
-  , y = 0
-  , velocity = 0.5
-  }
-
-
 makeIndexedMissile : Float -> IndexedMissile
 makeIndexedMissile velocity =
   { x = 0
