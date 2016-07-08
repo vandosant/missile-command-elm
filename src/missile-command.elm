@@ -4,7 +4,7 @@ import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Time exposing (Time, millisecond)
 import VirtualDom exposing (Node)
-
+import Random exposing (..)
 
 
 main =
@@ -47,7 +47,7 @@ model : Model
 model =
   { score = 0
   , missiles =
-    List.map makeIndexedMissile [0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5]
+    List.map makeIndexedMissile [0.1, 0.2, 0.3, 0.4]
   }
 
 
@@ -67,10 +67,24 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg ({score, missiles} as model) =
   case msg of
     Tick newTime ->
-      ({ model |
-        missiles =
-          List.map updateMissile missiles
-       }, Cmd.none)
+      let
+        filteredMissiles =
+          List.filter isOnCanvas
+            (List.map updateMissile missiles)
+        nextMissiles =
+          if List.length filteredMissiles < 4 then
+              List.append filteredMissiles [(makeIndexedMissile 0.1)]
+          else
+            filteredMissiles
+      in
+        ({ model |
+          missiles = nextMissiles
+         }, Cmd.none)
+
+
+isOnCanvas : IndexedMissile -> Bool
+isOnCanvas missile =
+  missile.x < 100 || missile.y < 100
 
 updateMissile : IndexedMissile -> IndexedMissile
 updateMissile missile = {x = missile.x + missile.velocity
