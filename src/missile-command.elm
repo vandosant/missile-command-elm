@@ -4,7 +4,7 @@ import Svg exposing (..)
 import Svg.Attributes exposing (..)
 import Time exposing (Time, millisecond)
 import VirtualDom exposing (Node)
-import Random exposing (..)
+import Random exposing (float, generate)
 
 
 main =
@@ -60,7 +60,8 @@ init =
 
 
 type Msg =
-  Tick Time
+  Tick Time |
+  NewMissile Float
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -71,16 +72,20 @@ update msg ({score, missiles} as model) =
         filteredMissiles =
           List.filter isOnCanvas
             (List.map updateMissile missiles)
-        nextMissiles =
+        nextMissile =
           if List.length filteredMissiles < 4 then
-              List.append filteredMissiles [(makeIndexedMissile 0.1)]
+            Random.generate NewMissile (Random.float 0.1 0.3)
           else
-            filteredMissiles
+            Cmd.none
       in
         ({ model |
-          missiles = nextMissiles
-         }, Cmd.none)
-
+          missiles = filteredMissiles
+         }, nextMissile)
+    NewMissile velocity ->
+      ({ model |
+        missiles =
+          (makeIndexedMissile velocity) :: missiles
+       }, Cmd.none)
 
 isOnCanvas : IndexedMissile -> Bool
 isOnCanvas missile =
